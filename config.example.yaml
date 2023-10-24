@@ -1,0 +1,8 @@
+# You bot's token from bot father
+telegram_token:
+
+# Optional. Use it if you host telegram-web-api yourself
+telegram_host:
+
+# Optional. A http proxy for bonbast http client.
+bonbast_proxy: http://localhost:5432
