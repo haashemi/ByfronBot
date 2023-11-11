@@ -1,6 +1,6 @@
 package commands
 
-import "byfron/pkg/bonbast"
+import "github.com/haashemi/ByfronBot/pkg/bonbast"
 
 type Commands struct {
 	bonbastClient *bonbast.Client

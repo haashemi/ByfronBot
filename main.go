@@ -1,13 +1,13 @@
 package main
 
 import (
-	"byfron/commands"
-	"byfron/pkg/bonbast"
-	"byfron/pkg/config"
 	"fmt"
 	"log"
 	"time"
 
+	"github.com/haashemi/ByfronBot/commands"
+	"github.com/haashemi/ByfronBot/pkg/bonbast"
+	"github.com/haashemi/ByfronBot/pkg/config"
 	"github.com/haashemi/tgo"
 	"github.com/haashemi/tgo/filters"
 	"github.com/haashemi/tgo/routers/message"
@@ -47,20 +47,12 @@ func main() {
 	mr.Handle(filters.Command("server", info.Username), cmd.Server)
 	bot.AddRouter(mr)
 
-	// Create a session
-	// ses, _ := torrent.NewSession(torrent.DefaultConfig)
-	// if err != nil {
-	// 	log.Fatalln("Failed to initialize a new torrent session", err)
-	// 	return
-	// }
-	// scmd := supercommands.NewSuperCommands()
-
 	bot.SetMyCommands(&tgo.SetMyCommands{
 		Commands: []*tgo.BotCommand{
 			{Command: "me", Description: "Your info"},
-			{Command: "arz", Description: "نرخ درز"},
+			{Command: "arz", Description: "IRT exchange rates"},
 			{Command: "stp", Description: "Sticker to picture"},
-			{Command: "ptss", Description: "Picture to sticker size document"},
+			{Command: "ptss", Description: "Picture to sticker sized document"},
 			{Command: "time", Description: "Current time"},
 			{Command: "server", Description: "Server's status"},
 		},
