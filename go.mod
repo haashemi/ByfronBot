@@ -1,12 +1,10 @@
 module github.com/haashemi/ByfronBot
 
-go 1.21.4
-
-replace github.com/haashemi/tgo v0.1.0 => ../tgo
+go 1.19
 
 require (
 	github.com/LlamaNite/llamaimage v0.2.1
-	github.com/haashemi/tgo v0.1.0
+	github.com/haashemi/tgo v0.0.0-20231030191513-b31c8d4fb3d7
 	github.com/shirou/gopsutil v2.21.11+incompatible
 	github.com/yaa110/go-persian-calendar v1.1.5
 	gopkg.in/yaml.v3 v3.0.1
