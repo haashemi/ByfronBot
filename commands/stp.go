@@ -21,6 +21,8 @@ func (c *Commands) STP(ctx *message.Context) {
 		return
 	}
 
+	ctx.Bot.SendChatAction(&tgo.SendChatAction{ChatId: tgo.ID(ctx.Chat.Id), Action: "upload_document"})
+
 	sticker := ctx.ReplyToMessage.Sticker
 
 	file, err := ctx.Bot.GetFile(&tgo.GetFile{FileId: sticker.FileId})
