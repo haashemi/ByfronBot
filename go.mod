@@ -7,6 +7,7 @@ require (
 	github.com/haashemi/tgo v0.0.0-20231030191513-b31c8d4fb3d7
 	github.com/shirou/gopsutil v2.21.11+incompatible
 	github.com/yaa110/go-persian-calendar v1.1.5
+	golang.org/x/text v0.13.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
