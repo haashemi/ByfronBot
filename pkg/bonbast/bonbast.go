@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -23,86 +24,109 @@ type Client struct {
 }
 
 type Response struct {
-	Aed1         string `json:"aed1"`
-	Aed2         string `json:"aed2"`
-	Afn1         string `json:"afn1"`
-	Afn2         string `json:"afn2"`
-	Amd1         string `json:"amd1"`
-	Amd2         string `json:"amd2"`
-	Aud1         string `json:"aud1"`
-	Aud2         string `json:"aud2"`
-	Azadi1       string `json:"azadi1"`
-	Azadi12      string `json:"azadi12"`
-	Azadi120     string `json:"azadi1_2"`
-	Azadi122     string `json:"azadi1_22"`
-	Azadi14      string `json:"azadi1_4"`
-	Azadi142     string `json:"azadi1_42"`
-	Azadi1G      string `json:"azadi1g"`
-	Azadi1G2     string `json:"azadi1g2"`
-	Azn1         string `json:"azn1"`
-	Azn2         string `json:"azn2"`
-	Bhd1         string `json:"bhd1"`
-	Bhd2         string `json:"bhd2"`
-	Bitcoin      string `json:"bitcoin"`
-	Bourse       string `json:"bourse"`
-	Cad1         string `json:"cad1"`
-	Cad2         string `json:"cad2"`
-	Chf1         string `json:"chf1"`
-	Chf2         string `json:"chf2"`
-	Cny1         string `json:"cny1"`
-	Cny2         string `json:"cny2"`
+	Aed1         Number `json:"aed1"`
+	Aed2         Number `json:"aed2"`
+	Afn1         Number `json:"afn1"`
+	Afn2         Number `json:"afn2"`
+	Amd1         Number `json:"amd1"`
+	Amd2         Number `json:"amd2"`
+	Aud1         Number `json:"aud1"`
+	Aud2         Number `json:"aud2"`
+	Azadi1       Number `json:"azadi1"`
+	Azadi12      Number `json:"azadi12"`
+	Azadi120     Number `json:"azadi1_2"`
+	Azadi122     Number `json:"azadi1_22"`
+	Azadi14      Number `json:"azadi1_4"`
+	Azadi142     Number `json:"azadi1_42"`
+	Azadi1G      Number `json:"azadi1g"`
+	Azadi1G2     Number `json:"azadi1g2"`
+	Azn1         Number `json:"azn1"`
+	Azn2         Number `json:"azn2"`
+	Bhd1         Number `json:"bhd1"`
+	Bhd2         Number `json:"bhd2"`
+	Bitcoin      Number `json:"bitcoin"`
+	Bourse       Number `json:"bourse"`
+	Cad1         Number `json:"cad1"`
+	Cad2         Number `json:"cad2"`
+	Chf1         Number `json:"chf1"`
+	Chf2         Number `json:"chf2"`
+	Cny1         Number `json:"cny1"`
+	Cny2         Number `json:"cny2"`
 	Created      string `json:"created"`
 	Day          int    `json:"day"`
-	Dkk1         string `json:"dkk1"`
-	Dkk2         string `json:"dkk2"`
-	Emami1       string `json:"emami1"`
-	Emami12      string `json:"emami12"`
-	Eur1         string `json:"eur1"`
-	Eur2         string `json:"eur2"`
-	Gbp1         string `json:"gbp1"`
-	Gbp2         string `json:"gbp2"`
-	Gol18        string `json:"gol18"`
-	Hkd1         string `json:"hkd1"`
-	Hkd2         string `json:"hkd2"`
+	Dkk1         Number `json:"dkk1"`
+	Dkk2         Number `json:"dkk2"`
+	Emami1       Number `json:"emami1"`
+	Emami12      Number `json:"emami12"`
+	Eur1         Number `json:"eur1"`
+	Eur2         Number `json:"eur2"`
+	Gbp1         Number `json:"gbp1"`
+	Gbp2         Number `json:"gbp2"`
+	Gol18        Number `json:"gol18"`
+	Hkd1         Number `json:"hkd1"`
+	Hkd2         Number `json:"hkd2"`
 	Hour         string `json:"hour"`
-	Inr1         string `json:"inr1"`
-	Inr2         string `json:"inr2"`
-	Iqd1         string `json:"iqd1"`
-	Iqd2         string `json:"iqd2"`
-	Jpy1         string `json:"jpy1"`
-	Jpy2         string `json:"jpy2"`
-	Kwd1         string `json:"kwd1"`
-	Kwd2         string `json:"kwd2"`
+	Inr1         Number `json:"inr1"`
+	Inr2         Number `json:"inr2"`
+	Iqd1         Number `json:"iqd1"`
+	Iqd2         Number `json:"iqd2"`
+	Jpy1         Number `json:"jpy1"`
+	Jpy2         Number `json:"jpy2"`
+	Kwd1         Number `json:"kwd1"`
+	Kwd2         Number `json:"kwd2"`
 	LastModified string `json:"last_modified"`
 	Minute       string `json:"minute"`
-	Mithqal      string `json:"mithqal"`
+	Mithqal      Number `json:"mithqal"`
 	Month        int    `json:"month"`
-	Myr1         string `json:"myr1"`
-	Myr2         string `json:"myr2"`
-	Nok1         string `json:"nok1"`
-	Nok2         string `json:"nok2"`
-	Omr1         string `json:"omr1"`
-	Omr2         string `json:"omr2"`
-	Ounce        string `json:"ounce"`
-	Qar1         string `json:"qar1"`
-	Qar2         string `json:"qar2"`
-	Rub1         string `json:"rub1"`
-	Rub2         string `json:"rub2"`
-	Sar1         string `json:"sar1"`
-	Sar2         string `json:"sar2"`
+	Myr1         Number `json:"myr1"`
+	Myr2         Number `json:"myr2"`
+	Nok1         Number `json:"nok1"`
+	Nok2         Number `json:"nok2"`
+	Omr1         Number `json:"omr1"`
+	Omr2         Number `json:"omr2"`
+	Ounce        Number `json:"ounce"`
+	Qar1         Number `json:"qar1"`
+	Qar2         Number `json:"qar2"`
+	Rub1         Number `json:"rub1"`
+	Rub2         Number `json:"rub2"`
+	Sar1         Number `json:"sar1"`
+	Sar2         Number `json:"sar2"`
 	Second       string `json:"second"`
-	Sek1         string `json:"sek1"`
-	Sek2         string `json:"sek2"`
-	Sgd1         string `json:"sgd1"`
-	Sgd2         string `json:"sgd2"`
-	Thb1         string `json:"thb1"`
-	Thb2         string `json:"thb2"`
-	Try1         string `json:"try1"`
-	Try2         string `json:"try2"`
-	Usd1         string `json:"usd1"`
-	Usd2         string `json:"usd2"`
+	Sek1         Number `json:"sek1"`
+	Sek2         Number `json:"sek2"`
+	Sgd1         Number `json:"sgd1"`
+	Sgd2         Number `json:"sgd2"`
+	Thb1         Number `json:"thb1"`
+	Thb2         Number `json:"thb2"`
+	Try1         Number `json:"try1"`
+	Try2         Number `json:"try2"`
+	Usd1         Number `json:"usd1"`
+	Usd2         Number `json:"usd2"`
 	Weekday      string `json:"weekday"`
 	Year         int    `json:"year"`
+}
+
+type Number float64
+
+func (c Number) MarshalJSON() ([]byte, error) {
+	return []byte(strconv.Quote(strconv.FormatFloat(float64(c), 'f', 0, 64))), nil
+}
+
+func (c *Number) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		s = string(b)
+	}
+	i, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return err
+	}
+	*c = Number(i)
+	return nil
+}
+
+func (c Number) Float64() float64 {
+	return float64(c)
 }
 
 func NewClient(proxyUrl string) (*Client, error) {
