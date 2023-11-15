@@ -13,16 +13,16 @@ A simple personal Telegram bot based on [tgo](https://github.com/haashemi/tgo) f
 
 ### Usage:
 
-1- Modify the config file however you prefer
+1. Modify the config file however you prefer
 
-```bash
-$ cp config.example.yaml config.yaml
-$ # modify the config.yaml however you want here
-```
+   ```bash
+   $ cp config.example.yaml config.yaml
+   $ # modify the config.yaml however you want here
+   ```
 
-2- Compile and run it!
+2. Compile and run it!
 
-```
-$ go build .
-$ ./ByfronBot
-```
+   ```
+   $ go build .
+   $ ./ByfronBot
+   ```
