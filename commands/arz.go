@@ -27,9 +27,9 @@ const ArzText = `💸| Exchange rates:
 `
 
 func (c *Commands) Arz(ctx *message.Context) {
-	data, err := c.bonbastClient.GetData()
-	if err != nil {
-		handleMessageError(err, ctx)
+	data := c.bonbastClient.GetData()
+	if data == nil || data.LastModified == "" {
+		ctx.Send(&tgo.SendMessage{Text: "⚠️ Exchange rates are not available at the moment. please try again later."})
 		return
 	}
 

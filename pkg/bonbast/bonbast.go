@@ -5,24 +5,25 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
 )
 
-type Client struct {
-	sync.Mutex
+const HOST = "https://bonbast.com/"
 
+// Client holds the cached data & the token parameter.
+type Client struct {
+	sync.RWMutex
 	client *http.Client
 
-	cachedAt   time.Time
-	cachedData *Response
-
+	cache          *Response
 	token          string
+	cacheCreatedAt time.Time
 	tokenCreatedAt time.Time
 }
 
+// Response holds the Bonbast's Pricing data
 type Response struct {
 	Aed1         Number `json:"aed1"`
 	Aed2         Number `json:"aed2"`
@@ -106,33 +107,8 @@ type Response struct {
 	Year         int    `json:"year"`
 }
 
-type Number float64
-
-func (c Number) MarshalJSON() ([]byte, error) {
-	return []byte(strconv.Quote(strconv.FormatFloat(float64(c), 'f', 0, 64))), nil
-}
-
-func (c *Number) UnmarshalJSON(b []byte) error {
-	s, err := strconv.Unquote(string(b))
-	if err != nil {
-		s = string(b)
-	}
-	i, err := strconv.ParseFloat(s, 64)
-	if err != nil {
-		return err
-	}
-	*c = Number(i)
-	return nil
-}
-
-func (c Number) Float64() float64 {
-	return float64(c)
-}
-
 func NewClient(proxyUrl string) (*Client, error) {
-	client := &Client{
-		client: &http.Client{},
-	}
+	c := &Client{client: &http.Client{}}
 
 	if proxyUrl != "" {
 		proxy, err := url.Parse(proxyUrl)
@@ -140,90 +116,90 @@ func NewClient(proxyUrl string) (*Client, error) {
 			return nil, err
 		}
 
-		client.client.Transport = &http.Transport{
+		c.client.Transport = &http.Transport{
 			Proxy: http.ProxyURL(proxy),
 		}
 	}
 
-	return client, nil
+	go c.updateInBackground()
+
+	return c, nil
 }
 
-func (c *Client) setHeaders(req *http.Request) {
-	req.Header.Set("accept", "application/json, text/javascript, */*; q=0.01")
-	req.Header.Set("accept-language", "en-US,en-GB;q=0.9,en;q=0.8,fa;q=0.7")
-	req.Header.Set("content-type", "application/x-www-form-urlencoded; charset=UTF-8")
-	req.Header.Set("sec-ch-ua", "\"Chromium\";v=\"110\", \"Not A(Brand\";v=\"24\", \"Google Chrome\";v=\"110\"")
-	req.Header.Set("sec-ch-ua-mobile", "?0")
-	req.Header.Set("sec-ch-ua-platform", "\"Windows\"")
-	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("sec-fetch-mode", "cors")
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("x-requested-with", "XMLHttpRequest")
-	req.Header.Set("cookie", "st_bb=0")
-	req.Header.Set("Referer", "https://bonbast.com/")
-	req.Header.Set("Referrer-Policy", "strict-origin-when-cross-origin")
-}
-
-func (c *Client) getToken() (string, error) {
-	if c.token != "" && time.Since(c.tokenCreatedAt).Hours() < 48 {
-		return c.token, nil
+func (c *Client) updateInBackground() {
+	if err := c.updateToken(); err != nil {
+		panic(err)
+	} else if err = c.updateCache(); err != nil {
+		panic(err)
 	}
 
-	req, err := http.NewRequest("GET", "https://bonbast.com/", nil)
+	for range time.NewTicker(time.Second * 30).C {
+		if time.Since(c.tokenCreatedAt).Hours() >= 24 {
+			if err := c.updateToken(); err != nil {
+				panic(err)
+			}
+		}
+
+		if err := c.updateCache(); err != nil {
+			panic(err)
+		}
+	}
+}
+
+func (c *Client) updateCache() error {
+	c.Lock()
+	defer c.Unlock()
+
+	req, err := http.NewRequest("POST", HOST+"json", strings.NewReader((url.Values{"param": {c.token}}).Encode()))
 	if err != nil {
-		return "", err
+		return err
 	}
-	c.setHeaders(req)
+	setHeaders(req)
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return "", err
+		return err
+	}
+	defer resp.Body.Close()
+
+	data := &Response{}
+	if err = json.NewDecoder(resp.Body).Decode(data); err != nil {
+		return err
+	}
+
+	c.cache = data
+	c.cacheCreatedAt = time.Now()
+
+	return nil
+}
+
+func (c *Client) updateToken() error {
+	req, err := http.NewRequest("GET", HOST, nil)
+	if err != nil {
+		return err
+	}
+	setHeaders(req)
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return err
 	}
 	defer resp.Body.Close()
 
 	bb, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	c.token = strings.SplitN(strings.SplitN(string(bb), "$.post('/json', {param: \"", 2)[1], "\"},", 2)[0]
+	c.token = strings.Split(strings.Split(string(bb), `$.post('/json', {param: "`)[1], `"},`)[0]
 	c.tokenCreatedAt = time.Now()
 
-	return c.token, nil
+	return nil
 }
 
-func (c *Client) GetData() (*Response, error) {
-	c.Lock()
-	defer c.Unlock()
+func (c *Client) GetData() *Response {
+	c.RLock()
+	defer c.RUnlock()
 
-	if c.cachedData != nil && time.Since(c.cachedAt).Seconds() < 30 {
-		return c.cachedData, nil
-	}
-
-	token, err := c.getToken()
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", "https://bonbast.com/json", strings.NewReader((url.Values{"param": {token}}).Encode()))
-	if err != nil {
-		return nil, err
-	}
-	c.setHeaders(req)
-
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	var data Response
-	if err = json.NewDecoder(resp.Body).Decode(&data); err != nil {
-		return nil, err
-	}
-
-	c.cachedData = &data
-	c.cachedAt = time.Now()
-
-	return c.cachedData, nil
+	return c.cache
 }
