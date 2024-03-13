@@ -134,7 +134,7 @@ func (c *Client) updateInBackground() {
 	}
 
 	for range time.NewTicker(time.Second * 30).C {
-		if time.Since(c.tokenCreatedAt).Hours() >= 1 {
+		if time.Since(c.tokenCreatedAt).Minutes() >= 10 {
 			if err := c.updateToken(); err != nil {
 				panic(err)
 			}
