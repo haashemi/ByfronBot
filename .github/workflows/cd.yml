@@ -20,6 +20,6 @@ jobs:
           script: |
             cd ~/deployment/ByfronBot
             git pull
-            go build -o ByfronBot .
             mv ByfronBot old
+            go build -o ByfronBot .
             sudo systemctl restart byfron
