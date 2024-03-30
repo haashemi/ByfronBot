@@ -12,10 +12,13 @@ import (
 const ArzText = `💸| Exchange rates:
 
 <code>🇺🇸| USD:</code> <code>%.0f IRT</code>
+<code>🇨🇦| CAD:</code> <code>%.0f IRT</code>
 <code>🇪🇺| EUR:</code> <code>%.0f IRT</code>
 <code>🇬🇧| GBP:</code> <code>%.0f IRT</code>
 <code>🇹🇷| TRY:</code> <code>%.0f IRT</code>
 <code>🇷🇺| RUB:</code> <code>%.0f IRT</code>
+<code>🇯🇵| JPY:</code> <code>%.0f IRT</code>
+
 
 <code>🪙| Emami     :</code> <code>%.0f IRT</code>
 <code>🪙| 1/1 Azadi :</code> <code>%.0f IRT</code>
@@ -41,7 +44,15 @@ func (c *Commands) Arz(ctx *message.Context) {
 	lastModifiedStr := lastModified.Local().Format(time.Stamp)
 
 	ctx.Reply(&tgo.SendMessage{
-		Text: printer.NewPrinter(language.English).Sprintf(ArzText, data.Usd1, data.Eur1, data.Gbp1, data.Try1, data.Rub1, data.Emami1, data.Azadi1, data.Azadi120, data.Azadi14, data.Azadi1G, lastModifiedStr),
+		Text: printer.NewPrinter(language.English).Sprintf(
+			ArzText,
+
+			data.Usd1, data.Cad1, data.Eur1, data.Gbp1, data.Try1, data.Rub1, data.Jpy1/10,
+
+			data.Emami1, data.Azadi1, data.Azadi120, data.Azadi14, data.Azadi1G,
+
+			lastModifiedStr,
+		),
 
 		ReplyMarkup: tgo.InlineKeyboardMarkup{InlineKeyboard: [][]*tgo.InlineKeyboardButton{
 			{&tgo.InlineKeyboardButton{Text: "Source", Url: "https://bonbast.com/"}},
